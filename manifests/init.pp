@@ -22,13 +22,9 @@
 # Andrew Tomaka <atomaka@gmail.com>
 # Sebastien Badia <seb@sebian.fr>
 #
-class gitlab_requirements(
-  $gitlab_dbname = 'gitlab',
-  $gitlab_dbuser = 'gitlab',
-  $gitlab_dbpwd  = 'changeme') {
+class gitlab_requirements() {
   include redis
   include nginx
-  include mysql::server
   include git
   include logrotate
 
@@ -65,12 +61,6 @@ class gitlab_requirements(
 
   class { 'ruby::dev': }
 
-  mysql::db {
-    $gitlab_dbname:
-      user     => $gitlab_dbuser,
-      password => $gitlab_dbpwd,
-  }
-
   anchor { 'gitlab_requirements::begin': }
   anchor { 'gitlab_requirements::end': }
 
@@ -81,8 +71,6 @@ class gitlab_requirements(
   Class['ruby'] ->
   Class['ruby::dev'] ->
   Class['git'] ->
-  Class['mysql::server'] ->
-  Mysql::Db[$gitlab_dbname] ->
   Anchor['gitlab_requirements::end']
 
 }
